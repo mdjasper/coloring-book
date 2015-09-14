@@ -19,13 +19,13 @@ var Coloring = function(options){
 		self.myColors = options.colors || [];
 		if(!options.colors){
 			self.myColors['red'] 	= "#c00d0d";
-			self.myColors['orange']  = "#eaa000";
-			self.myColors['yellow'] 	= "#fefb20";
-			self.myColors['lgreen'] 	= "#bafb3b";
-			self.myColors['dgreen'] 	= "#0ab40e";
+			self.myColors['orange'] = "#eaa000";
+			self.myColors['yellow'] = "#fefb20";
+			self.myColors['lgreen'] = "#bafb3b";
+			self.myColors['dgreen'] = "#0ab40e";
 			self.myColors['lblue'] 	= "#3bd0fb";
 			self.myColors['dblue'] 	= "#2f33d7";
-			self.myColors['purple'] 	= "#ac3bfb";
+			self.myColors['purple'] = "#ac3bfb";
 			self.myColors['white'] 	= "#ffffff";
 			self.myColors['grey'] 	= "#b8b8c1";
 			self.myColors['black'] 	= "#3a3a3a";
@@ -61,50 +61,52 @@ var Coloring = function(options){
 		self.outline = new Raster(options.page);
 		self = self;
 		self.outline.onLoad = function() {
-			console.log("image loaded");
 		    view.viewSize = self.outline.size;
 			self.outline.position = view.center;
-			$("#page").remove();
 		};
 
 		//Run jQuery event handlers (color, brush, pan, Zoom)
 		//Color Selection
-		$('.controls-colorSelector').click(function(e){
-			var color = $(this).data('color');
+		on('.controls-colorSelector', 'click', function(e){
+			var color = this.getAttribute('data-color')
 			self.currentColor = self.myColors[color];
-			$(".controls-colorSelector").removeClass('active');
-			$(this).addClass('active')
+			[].slice.call(document.querySelectorAll('.controls-colorSelector')).forEach(function(element){
+				element.classList.remove('active');
+			});
+			this.classList.add('active');
 		});
 
 		//Size Selection
-		$('.controls-sizeSelector').click(function(e){
-			var newSize = $(this).data('size');
+		on('.controls-sizeSelector', 'click', function(e){
+			var newSize = this.getAttribute('data-size');
 			self.currentSize = sizes[newSize];
-			$(".controls-sizeSelector").removeClass('active');
-			$(this).addClass('active')
+			[].slice.call(document.querySelectorAll('.controls-sizeSelector')).forEach(function(element){
+				element.classList.remove('active');
+			});
+			this.classList.add('active');
 		});
 
 		//Zoom Slider
-		$('.controls-zoom').change(function(evt) { 
+		on('.controls-zoom', 'change', function(evt) { 
 		    paper.view.zoom = evt.target.valueAsNumber;
 		});
 
 		//Print Button
-		$('.controls-print').click(function(evt) { 
+		on('.controls-print', 'click', function(evt) { 
 		    printCanvas();
 		}); 
 
 		//Pan Controls
-		$(".controls-panUp").click(function(){
+		on('.controls-panUp', 'click', function(){
 			view.center = [view.center.x, view.center.y-panAmount];
 		});
-		$(".controls-panDown").click(function(){
+		on('.controls-panDown', 'click', function(){
 			view.center = [view.center.x, view.center.y+panAmount];
 		});
-		$(".controls-panLeft").click(function(){
+		on('.controls-panLeft', 'click', function(){
 			view.center = [view.center.x-panAmount, view.center.y];
 		});
-		$(".controls-panRight").click(function(){
+		on('.controls-panRight', 'click', function(){
 			view.center = [view.center.x+panAmount, view.center.y];
 		});
 
@@ -154,6 +156,11 @@ var Coloring = function(options){
 		    printWin.focus();
 		    printWin.print();
 		    printWin.close();
+		}
+		function on(selector, event, callback){
+			[].slice.call(document.querySelectorAll(selector)).forEach(function(element){
+				element.addEventListener(event, callback);
+			})
 		}
 	}
 };
