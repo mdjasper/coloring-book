@@ -1,0 +1,60 @@
+<link rel="stylesheet" type="text/css" href="css/coloring.css">
+<script type="text/javascript" src="scripts/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="scripts/coloring.js"></script>
+<script type="text/javascript" src="scripts/paper.js"></script>
+
+<section class="coloringContainer">
+	<div class="controls-left">
+		<ul class="controlList colorList">
+			<li><button class="controls-colorSelector red active" data-color="red" type="button"></button></li>
+			<li><button class="controls-colorSelector orange" data-color="orange" type="button"></button></li>
+			<li><button class="controls-colorSelector yellow" data-color="yellow" type="button"></button></li>
+			<li><button class="controls-colorSelector lgreen" data-color="lgreen" type="button"></button></li>
+			<li><button class="controls-colorSelector dgreen" data-color="dgreen" type="button"></button></li>
+			<li><button class="controls-colorSelector lblue" data-color="lblue" type="button"></button></li>
+			<li><button class="controls-colorSelector dblue" data-color="dblue" type="button"></button></li>
+			<li><button class="controls-colorSelector purple" data-color="purple" type="button"></button></li>
+		</ul>
+		<ul class="controlList colorList">
+			<li><button class="controls-colorSelector white" data-color="white" type="button"></button></li>
+			<li><button class="controls-colorSelector grey" data-color="grey" type="button"></button></li>
+			<li><button class="controls-colorSelector black" data-color="black" type="button"></button></li>
+			<li><button class="controls-colorSelector skin1" data-color="skin1" type="button"></button></li>
+			<li><button class="controls-colorSelector skin2" data-color="skin2" type="button"></button></li>
+			<li><button class="controls-colorSelector skin3" data-color="skin3" type="button"></button></li>
+		</ul>
+	</div>
+	<div class="art">
+		<ul class="controlList sizeList">
+			<li><button class="controls-sizeSelector small active" data-size="small" type="button"></button></li>
+			<li><button class="controls-sizeSelector normal" data-size="normal" type="button"></button></li>
+			<li><button class="controls-sizeSelector large" data-size="large" type="button"></button></li>
+			<li><button class="controls-sizeSelector huge" data-size="huge" type="button"></button></li>
+		</ul>
+		<canvas id="canvasElement"></canvas>
+	</div>
+	<div class="controls-right">
+		<ul class="controlList">
+			<li><button class="controls-clear" type="button"></button></li>
+			<!-- <li><button class="controls-fullScreen" type="button"></button></li> -->
+			<li><button class="controls-print" type="button"></button></li>
+			<!-- <li><button class="controls-zoomOut" type="button"></button></li> -->
+			<li><button class="controls-sound" type="button"></button></li>
+			<li><input class="controls-zoom" type="range" min="1" max="5" value="0" step="1" /> </li>
+			<li class="direction">
+				<button class="controls-panUp"></button>
+				<button class="controls-panLeft"></button>
+				<button class="controls-panRight"></button>
+				<button class="controls-panDown"></button>
+			</li>
+		</ul>
+	</div>
+</section>
+<script type="text/javascript">
+	var page = "images/pages/art.png";
+	
+	Coloring({
+		canvasId: "canvasElement",
+		page: page
+	})
+</script>
