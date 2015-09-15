@@ -1,68 +1,60 @@
 var paper = require('../bower_components/paper/dist/paper-core.min.js');
 
-var Coloring = function(options){
+var Coloring = function({
+	canvasId = 'canvasElement',
+	myColors = {
+		'red': '#c00d0d',
+		'orange': '#eaa000',
+		'yellow': '#fefb20',
+		'lgreen': '#bafb3b',
+		'dgreen': '#0ab40e',
+		'lblue': '#3bd0fb',
+		'dblue': '#2f33d7',
+		'purple': '#ac3bfb',
+		'white': '#ffffff',
+		'grey': '#b8b8c1',
+		'black': '#3a3a3a',
+		'skin1': '#eddc8e',
+		'skin2': '#cac498',
+		'skin3': '#584f31'
+		},
+	currentColor = '#c00d0d',
+	sizes = {
+		'small': 2,
+		'normal': 5,
+		'large': 10,
+		'huge': 20
+	},
+	currentSize = 5,
+	panAmount = 20,
+	page = 'images/pages/art.png'
+	} = {}){
 
-	var self = {};
-	self.options = options;
 	//Set up the canvas element
-	var canvas = document.getElementById(options.canvasId);
+	var canvas = document.getElementById(canvasId);
 	paper.setup(canvas);
 
-	//Set up the colors from option or defaults
-	self.myColors = options.colors || [];
-	if(!options.colors){
-		self.myColors['red'] 	= "#c00d0d";
-		self.myColors['orange'] = "#eaa000";
-		self.myColors['yellow'] = "#fefb20";
-		self.myColors['lgreen'] = "#bafb3b";
-		self.myColors['dgreen'] = "#0ab40e";
-		self.myColors['lblue'] 	= "#3bd0fb";
-		self.myColors['dblue'] 	= "#2f33d7";
-		self.myColors['purple'] = "#ac3bfb";
-		self.myColors['white'] 	= "#ffffff";
-		self.myColors['grey'] 	= "#b8b8c1";
-		self.myColors['black'] 	= "#3a3a3a";
-		self.myColors['skin1'] 	= "#eddc8e";
-		self.myColors['skin2'] 	= "#cac498";
-		self.myColors['skin3'] 	= "#584f31";
-	}
-	self.currentColor = options.currentColor || self.myColors['red'];
-
-	//Set up brush sizes from options or defaults
-	self.sizes = options.sizes || [];
-
-	if(!options.sizes){
-		self.sizes['small'] = 2;
-		self.sizes['normal'] = 5;
-		self.sizes['large'] = 10;
-		self.sizes['huge'] = 20;
-	}
-	self.currentSize = options.currentSize || self.sizes['normal'];
-
-	//Zoom & Pan Settings
-	self.panAmount = 20;
 
 	//Path Settings
-	self.path = new paper.Path();
+	var path = new paper.Path();
 
 	//Mouse Tool Settings
-	self.tool = new paper.Tool()
-	self.tool.minDistance = 2;
-	self.tool.maxDistance = 50;
+	var tool = new paper.Tool()
+	var minDistance = 2;
+	var maxDistance = 50;
 
 	//Coloring page outline image
-	self.outline = new paper.Raster(options.page);
-	self = self;
-	self.outline.onLoad = function() {
-		paper.view.viewSize = self.outline.size;
-		self.outline.position = paper.view.center;
+	var outline = new paper.Raster(page);
+	outline.onLoad = function() {
+		paper.view.viewSize = outline.size;
+		outline.position = paper.view.center;
 	};
 
 	//Run jQuery event handlers (color, brush, pan, Zoom)
 	//Color Selection
 	on('.controls-colorSelector', 'click', function(e){
 		var color = this.getAttribute('data-color')
-		self.currentColor = self.myColors[color];
+		currentColor = myColors[color];
 		[].slice.call(document.querySelectorAll('.controls-colorSelector')).forEach(function(element){
 			element.classList.remove('active');
 		});
@@ -72,7 +64,7 @@ var Coloring = function(options){
 	//Size Selection
 	on('.controls-sizeSelector', 'click', function(e){
 		var newSize = this.getAttribute('data-size');
-		self.currentSize = self.sizes[newSize];
+		currentSize = sizes[newSize];
 		[].slice.call(document.querySelectorAll('.controls-sizeSelector')).forEach(function(element){
 			element.classList.remove('active');
 		});
@@ -91,50 +83,50 @@ var Coloring = function(options){
 
 	//Pan Controls
 	on('.controls-panUp', 'click', function(){
-		paper.view.center = [paper.view.center.x, paper.view.center.y-self.panAmount];
+		paper.view.center = [paper.view.center.x, paper.view.center.y-panAmount];
 	});
 	on('.controls-panDown', 'click', function(){
-		paper.view.center = [paper.view.center.x, paper.view.center.y+self.panAmount];
+		paper.view.center = [paper.view.center.x, paper.view.center.y+panAmount];
 	});
 	on('.controls-panLeft', 'click', function(){
-		paper.view.center = [paper.view.center.x-self.panAmount, paper.view.center.y];
+		paper.view.center = [paper.view.center.x-panAmount, paper.view.center.y];
 	});
 	on('.controls-panRight', 'click', function(){
-		paper.view.center = [paper.view.center.x+self.panAmount, paper.view.center.y];
+		paper.view.center = [paper.view.center.x+panAmount, paper.view.center.y];
 	});
 
 	//Paper.js tool event handlers
-	self.tool.onMouseDown = function(event) {
+	tool.onMouseDown = function(event) {
 		makeEndCap(event);
 
-		self.path = new paper.Path();
-		self.path.strokeColor = self.currentColor;
-		self.path.strokeWidth = self.currentSize;
-		self.path.add(event.point);
-		self.outline.bringToFront();
+		path = new paper.Path();
+		path.strokeColor = currentColor;
+		path.strokeWidth = currentSize;
+		path.add(event.point);
+		outline.bringToFront();
 	}
 
-	self.tool.onMouseDrag = function(event) {
-		self.path.add(event.point);
-		self.path.smooth();
-		self.outline.bringToFront();
+	tool.onMouseDrag = function(event) {
+		path.add(event.point);
+		path.smooth();
+		outline.bringToFront();
 	}
 
-	self.tool.onMouseUp = function(event) {
+	tool.onMouseUp = function(event) {
 		makeEndCap(event);
-		self.outline.bringToFront();
+		outline.bringToFront();
 	}
 
 	function makeEndCap(event){
 		var myCircle = new paper.Path.Circle({
 			center: event.point,
-			radius: self.currentSize/2
+			radius: currentSize/2
 		});
-		myCircle.fillColor = self.currentColor;
+		myCircle.fillColor = currentColor;
 	}
 
 	function printCanvas(){
-		var dataUrl = document.getElementById(self.options.canvasId).toDataURL(); //attempt to save base64 string to server using this var
+		var dataUrl = document.getElementById(canvasId).toDataURL(); //attempt to save base64 string to server using this var
 		var windowContent = '<!DOCTYPE html>';
 		windowContent += '<html>'
 		windowContent += '<head><title>Print canvas</title></head>';
@@ -151,10 +143,13 @@ var Coloring = function(options){
 		printWin.close();
 	}
 	function on(selector, event, callback){
-		[].slice.call(document.querySelectorAll(selector)).forEach(function(element){
+		[...document.querySelectorAll(selector)].forEach(function(element){
 			element.addEventListener(event, callback);
 		})
 	}
+
+	console.debug(self);
+
 };
 
 export default Coloring;
