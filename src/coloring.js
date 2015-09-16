@@ -79,7 +79,7 @@ var Coloring = function({
 	on('.controls-colorSelector', 'click', function(e){
 		var color = this.getAttribute('data-color')
 		currentColor = myColors[color];
-		[].slice.call(document.querySelectorAll('.controls-colorSelector')).forEach(function(element){
+		[...document.querySelectorAll('.controls-colorSelector')].forEach(function(element){
 			element.classList.remove('active');
 		});
 		this.classList.add('active');
@@ -89,7 +89,7 @@ var Coloring = function({
 	on('.controls-sizeSelector', 'click', function(e){
 		var newSize = this.getAttribute('data-size');
 		currentSize = sizes[newSize];
-		[].slice.call(document.querySelectorAll('.controls-sizeSelector')).forEach(function(element){
+		[...document.querySelectorAll('.controls-sizeSelector')].forEach(function(element){
 			element.classList.remove('active');
 		});
 		this.classList.add('active');
