@@ -47,13 +47,7 @@ var Coloring = function({
 		},
 		printCanvas = () => { //turn canvas to base64 encoded image and print it
 			var dataUrl = document.getElementById(canvasId).toDataURL(); //attempt to save base64 string to server using this var
-			var windowContent = '<!DOCTYPE html>';
-			windowContent += '<html>'
-			windowContent += '<head><title>Print canvas</title></head>';
-			windowContent += '<body><center>'
-			windowContent += '<img src="' + dataUrl + '">';
-			windowContent += '</center></body>';
-			windowContent += '</html>';
+			var windowContent = `<img src="${dataUrl}">`;
 			var printWin = window.open('','','width=340,height=260');
 			printWin.document.open();
 			printWin.document.write(windowContent);
@@ -68,7 +62,7 @@ var Coloring = function({
 			})
 		};
 	//resize the canvas to the size of the outline image once it loads
-	outline.onLoad = function() {
+	outline.onLoad = () => {
 		paper.view.viewSize = outline.size;
 		outline.position = paper.view.center;
 	};
@@ -76,51 +70,51 @@ var Coloring = function({
 	//Event Handling
 
 	//Color Selection
-	on('.controls-colorSelector', 'click', function(e){
-		var color = this.getAttribute('data-color')
+	on('.controls-colorSelector', 'click', (e) => {
+		var color = e.target.getAttribute('data-color')
 		currentColor = myColors[color];
 		[...document.querySelectorAll('.controls-colorSelector')].forEach(function(element){
 			element.classList.remove('active');
 		});
-		this.classList.add('active');
+		e.target.classList.add('active');
 	});
 
 	//Size Selection
-	on('.controls-sizeSelector', 'click', function(e){
-		var newSize = this.getAttribute('data-size');
+	on('.controls-sizeSelector', 'click', (e) => {
+		var newSize = e.target.getAttribute('data-size');
 		currentSize = sizes[newSize];
 		[...document.querySelectorAll('.controls-sizeSelector')].forEach(function(element){
 			element.classList.remove('active');
 		});
-		this.classList.add('active');
+		e.target.classList.add('active');
 	});
 
 	//Zoom Slider
-	on('.controls-zoom', 'change', function(evt) {
+	on('.controls-zoom', 'change', (evt) => {
 		paper.view.zoom = evt.target.valueAsNumber;
 	});
 
 	//Print Button
-	on('.controls-print', 'click', function(evt) {
+	on('.controls-print', 'click', (evt) => {
 		printCanvas();
 	});
 
 	//Pan Controls
-	on('.controls-panUp', 'click', function(){
+	on('.controls-panUp', 'click', () => {
 		paper.view.center = [paper.view.center.x, paper.view.center.y - panAmount];
 	});
-	on('.controls-panDown', 'click', function(){
+	on('.controls-panDown', 'click', () => {
 		paper.view.center = [paper.view.center.x, paper.view.center.y + panAmount];
 	});
-	on('.controls-panLeft', 'click', function(){
+	on('.controls-panLeft', 'click', () => {
 		paper.view.center = [paper.view.center.x - panAmount, paper.view.center.y];
 	});
-	on('.controls-panRight', 'click', function(){
+	on('.controls-panRight', 'click', () => {
 		paper.view.center = [paper.view.center.x + panAmount, paper.view.center.y];
 	});
 
 	//Paper.js tool event handlers
-	tool.onMouseDown = function(event) {
+	tool.onMouseDown = (event) => {
 		makeEndCap(event);
 
 		path = new paper.Path();
