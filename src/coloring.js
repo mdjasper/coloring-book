@@ -31,26 +31,50 @@ var Coloring = function({
 	} = {}){
 
 	//Set up the canvas element
-	var canvas = document.getElementById(canvasId);
-	paper.setup(canvas);
+	let canvas = document.getElementById(canvasId);
+	paper.setup(canvas); //paper needs to be setup before initializing other paper objects
 
-
-	//Path Settings
-	var path = new paper.Path();
-
-	//Mouse Tool Settings
-	var tool = new paper.Tool()
-	var minDistance = 2;
-	var maxDistance = 50;
-
-	//Coloring page outline image
-	var outline = new paper.Raster(page);
+	//paper.js objects and helper functions
+	let path = new paper.Path(), //user drawn coloring path
+		tool = new paper.Tool(), //mouse pointer
+		outline = new paper.Raster(page), //coloring page overlay
+		makeEndCap = (event) => { //creates a circle at the endpoints of a path
+			var myCircle = new paper.Path.Circle({
+				center: event.point,
+				radius: currentSize / 2
+			});
+			myCircle.fillColor = currentColor;
+		},
+		printCanvas = () => { //turn canvas to base64 encoded image and print it
+			var dataUrl = document.getElementById(canvasId).toDataURL(); //attempt to save base64 string to server using this var
+			var windowContent = '<!DOCTYPE html>';
+			windowContent += '<html>'
+			windowContent += '<head><title>Print canvas</title></head>';
+			windowContent += '<body><center>'
+			windowContent += '<img src="' + dataUrl + '">';
+			windowContent += '</center></body>';
+			windowContent += '</html>';
+			var printWin = window.open('','','width=340,height=260');
+			printWin.document.open();
+			printWin.document.write(windowContent);
+			printWin.document.close();
+			printWin.focus();
+			printWin.print();
+			printWin.close();
+		},
+		on = (selector, event, callback) => { //Event Binder
+			[...document.querySelectorAll(selector)].forEach(function(element){
+				element.addEventListener(event, callback);
+			})
+		};
+	//resize the canvas to the size of the outline image once it loads
 	outline.onLoad = function() {
 		paper.view.viewSize = outline.size;
 		outline.position = paper.view.center;
 	};
 
-	//Run jQuery event handlers (color, brush, pan, Zoom)
+	//Event Handling
+
 	//Color Selection
 	on('.controls-colorSelector', 'click', function(e){
 		var color = this.getAttribute('data-color')
@@ -83,16 +107,16 @@ var Coloring = function({
 
 	//Pan Controls
 	on('.controls-panUp', 'click', function(){
-		paper.view.center = [paper.view.center.x, paper.view.center.y-panAmount];
+		paper.view.center = [paper.view.center.x, paper.view.center.y - panAmount];
 	});
 	on('.controls-panDown', 'click', function(){
-		paper.view.center = [paper.view.center.x, paper.view.center.y+panAmount];
+		paper.view.center = [paper.view.center.x, paper.view.center.y + panAmount];
 	});
 	on('.controls-panLeft', 'click', function(){
-		paper.view.center = [paper.view.center.x-panAmount, paper.view.center.y];
+		paper.view.center = [paper.view.center.x - panAmount, paper.view.center.y];
 	});
 	on('.controls-panRight', 'click', function(){
-		paper.view.center = [paper.view.center.x+panAmount, paper.view.center.y];
+		paper.view.center = [paper.view.center.x + panAmount, paper.view.center.y];
 	});
 
 	//Paper.js tool event handlers
@@ -106,50 +130,16 @@ var Coloring = function({
 		outline.bringToFront();
 	}
 
-	tool.onMouseDrag = function(event) {
+	tool.onMouseDrag = (event) => {
 		path.add(event.point);
 		path.smooth();
 		outline.bringToFront();
 	}
 
-	tool.onMouseUp = function(event) {
+	tool.onMouseUp = (event) => {
 		makeEndCap(event);
 		outline.bringToFront();
 	}
-
-	function makeEndCap(event){
-		var myCircle = new paper.Path.Circle({
-			center: event.point,
-			radius: currentSize/2
-		});
-		myCircle.fillColor = currentColor;
-	}
-
-	function printCanvas(){
-		var dataUrl = document.getElementById(canvasId).toDataURL(); //attempt to save base64 string to server using this var
-		var windowContent = '<!DOCTYPE html>';
-		windowContent += '<html>'
-		windowContent += '<head><title>Print canvas</title></head>';
-		windowContent += '<body><center>'
-		windowContent += '<img src="' + dataUrl + '">';
-		windowContent += '</center></body>';
-		windowContent += '</html>';
-		var printWin = window.open('','','width=340,height=260');
-		printWin.document.open();
-		printWin.document.write(windowContent);
-		printWin.document.close();
-		printWin.focus();
-		printWin.print();
-		printWin.close();
-	}
-	function on(selector, event, callback){
-		[...document.querySelectorAll(selector)].forEach(function(element){
-			element.addEventListener(event, callback);
-		})
-	}
-
-	console.debug(self);
-
 };
 
 export default Coloring;
